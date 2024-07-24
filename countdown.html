@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #countdown {
+            font-size: 5em;
+            color: #333;
+        }
+
+        #breakMessageDisplay {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 0; /* Align the button to the top of the screen */
+            left: 0;
+            z-index: 1; /* Ensure the button stays on top of other content */
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            width: 100px;
+        }
+
+        .collapsible-panel {
+            position: fixed;
+            top: 50px; /* Adjusted to be just below the .toggle-btn */
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background: #eee;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn">&gt;&gt;</button>
+    <div class="collapsible-panel">
+        <form id="breakForm">
+            <label for="returnTime">Return Time:</label>
+            <input type="time" id="returnTime" name="returnTime" required>
+            <label for="breakMessage">Break Message:</label>
+            <textarea id="breakMessage" name="breakMessage" rows="4" cols="50" required></textarea>
+            <button type="submit">Start</button>
+        </form>
+    </div>
+    <div class="flex-container">
+        <div id="countdown"></div>
+        <div id="breakMessageDisplay"></div>
+    </div>
+
+    <script>
+
+        clock = {
+            start: startCountdown,
+            stop: stopCountdown,
+            lastInterval: 0
+        }
+
+        function startCountdown(targetTime, message="") {
+            var countDownDate = new Date(targetTime).getTime();
+
+            if (clock.lastInterval) {
+                clock.stop();
+            }
+
+
+            var x = setInterval(function() {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("countdown").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("countdown").innerHTML = "EXPIRED";
+                }
+            }, 1000);
+
+            if(message)
+                document.getElementById('breakMessageDisplay').innerText = message; 
+
+            clock.lastInterval = x;
+        }
+
+        // Define the stopCountdown function
+        function stopCountdown() {
+            if (clock.lastInterval) {
+                clearInterval(clock.lastInterval);
+                document.getElementById("countdown").innerHTML = ""; 
+                document.getElementById('breakMessageDisplay').innerText = "";// Optional: Update the display
+            }
+        }
+
+    // Modified form submission handler to parse form input and start the countdown
+    document.getElementById('breakForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var message = document.getElementById('breakMessage').value; // Retrieve the message from the input field
+        var returnTime = document.getElementById('returnTime').value;
+        // Create a full date-time string by combining with today's date
+        var today = new Date().toISOString().slice(0, 10); // Gets today's date in YYYY-MM-DD format
+        var dateTimeString = today + 'T' + returnTime; // Combines today's date with the input time
+        var targetTime = new Date(dateTimeString);
+        if (isNaN(targetTime)) {
+            console.error("Invalid date-time value.");
+            return; // Exit if the date-time is invalid
+        }
+        clock.start(targetTime.toISOString(), message);
+        togglePanel();
+        console.log("Countdown started for target time: " + targetTime.toISOString());
+    });
+
+    function togglePanel() {
+        var panel = document.querySelector('.collapsible-panel');
+        var toggleBtn = document.querySelector('.toggle-btn'); // Select the toggle button
+        if (panel.style.display === "none" || panel.style.display === "") {
+            panel.style.display = "block";
+            toggleBtn.innerText = '<<'; // Set text to << when the panel is open
+        } else {
+            panel.style.display = "none";
+            toggleBtn.innerText = '>>'; // Set text to >> when the panel is closed
+        }
+    }
+
+    document.querySelector('.toggle-btn').addEventListener('click', togglePanel);
+    </script>
+</body>
+</html>
