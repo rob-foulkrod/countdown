@@ -51,6 +51,7 @@
     </style>
 </head>
 <body>
+
     <button class="toggle-btn">&gt;&gt;</button>
     <div class="collapsible-panel">
         <form id="breakForm">
@@ -73,6 +74,42 @@
             stop: stopCountdown,
             lastInterval: 0
         }
+
+        function getClockState() {
+            // Placeholder function to retrieve the clock state
+            // Replace with actual logic to get the clock state
+            return clock;
+        }
+
+
+        function setClockState(clockState) {
+            // Placeholder function to set the clock state
+            // Replace with actual logic to set the clock state
+            clock = clockState;
+        }
+
+        function saveState() {
+            // Retrieve the current state of the timer and fields
+            const timer = document.getElementById('timer').innerText;
+            const field1 = document.getElementById('field1').value;
+            const field2 = document.getElementById('field2').value;
+
+            // Assuming the clock state is stored in a variable called clockState
+            const clockState = getClockState(); // Replace with actual clock state retrieval logic
+
+            // Create an object to store the state
+            const state = {
+                timer: timer,
+                field1: field1,
+                field2: field2,
+                clockState: clockState
+            };
+
+            // Save the state to local storage
+            localStorage.setItem('countdownState', JSON.stringify(state));
+        }
+
+
 
         function startCountdown(targetTime, message="") {
             var countDownDate = new Date(targetTime).getTime();
@@ -101,7 +138,25 @@
                 document.getElementById('breakMessageDisplay').innerText = message; 
 
             clock.lastInterval = x;
+            saveState();
         }
+
+        function loadState() {
+        // Retrieve the state from local storage
+        const state = JSON.parse(localStorage.getItem('countdownState'));
+
+        if (state) {
+            // Populate the timer and fields with the retrieved state
+            document.getElementById('timer').innerText = state.timer;
+            document.getElementById('field1').value = state.field1;
+            document.getElementById('field2').value = state.field2;
+
+            // Populate the clock state
+            setClockState(state.clockState); // Replace with actual clock state setting logic
+        }
+    }
+
+
 
         // Define the stopCountdown function
         function stopCountdown() {
@@ -143,6 +198,11 @@
     }
 
     document.querySelector('.toggle-btn').addEventListener('click', togglePanel);
+
+        window.onload = function() {
+            loadState();
+        };
+
     </script>
 </body>
 </html>
