@@ -52,8 +52,6 @@
 </head>
 <body>
 
-    <!-- This is the beginning of the save State feature -->
-
     <button class="toggle-btn">&gt;&gt;</button>
     <div class="collapsible-panel">
         <form id="breakForm">
@@ -80,18 +78,14 @@
         function getClockState() {
             // Placeholder function to retrieve the clock state
             // Replace with actual logic to get the clock state
-            return {
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-            };
+            return clock;
         }
 
 
         function setClockState(clockState) {
             // Placeholder function to set the clock state
             // Replace with actual logic to set the clock state
-            console.log('Setting clock state:', clockState);
+            clock = clockState;
         }
 
         function saveState() {
@@ -205,7 +199,7 @@
 
     document.querySelector('.toggle-btn').addEventListener('click', togglePanel);
 
-    window.onload = function() {
+        window.onload = function() {
             loadState();
         };
 
